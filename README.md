@@ -12,13 +12,16 @@ A modular, extensible command-line tool for enumerating privilege escalation vec
 
 ## Installation
 
-### Method 1: Download the Pre-compiled Binary (Easiest)
-For a normal Windows user, you do not need to install Python or Git. You can simply download the standalone executable:
-1. Navigate to the [Releases page](https://github.com/zodrimon/windows-privesc-assistant/releases) on GitHub.
-2. Download the latest `privesc-assistant-win.exe` file.
-3. Open Command Prompt or PowerShell, navigate to where you downloaded it, and run the tool directly:
+### Method 1: The "Hacker" Way (Recommended & Easiest)
+We highly recommend running this straight from PowerShell. Why? Because if you try to download the `.exe` using your browser, Windows SmartScreen will aggressively block it. Microsoft wants us to pay hundreds of dollars a year for a "Code Signing Certificate" just to prove we are real people. We are hackers, not billionaires. We don't have that kind of money. 
+
+Bypass the angry Windows popups by downloading and running it directly in PowerShell:
+
 ```powershell
-cd C:\Users\YourName\Downloads
+# 1. Download the executable straight from GitHub
+Invoke-WebRequest -Uri "https://github.com/zodrimon/windows-privesc-assistant/releases/latest/download/privesc-assistant-win.exe" -OutFile "privesc-assistant-win.exe"
+
+# 2. Run the scan!
 .\privesc-assistant-win.exe scan
 ```
 
