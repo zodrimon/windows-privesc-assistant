@@ -2,6 +2,7 @@ from typing import List
 from privesc_assistant_win.core.finding import Finding
 from privesc_assistant_win.core.scan_context import ScanContext
 from privesc_assistant_win.reporting.base_reporter import BaseReporter
+from privesc_assistant_win.scoring.risk_scorer import aggregate_findings
 
 class TerminalReporter(BaseReporter):
     def generate(self, context: ScanContext, findings: List[Finding]) -> str:
@@ -11,19 +12,21 @@ class TerminalReporter(BaseReporter):
         lines.append(f"Hostname: {context.hostname} | Build: {context.os_build} | User: {context.current_user}")
         lines.append(f"Is Elevated: {context.is_elevated}")
         lines.append(f"Timestamp: {context.timestamp}")
-        lines.append("="*60)
         
         if not findings:
+            lines.append("="*60)
             lines.append("No privesc vectors found.")
             return "\n".join(lines)
             
-        # Group by severity
-        severity_order = {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3, "INFO": 4}
-        sorted_findings = sorted(findings, key=lambda f: severity_order.get(f.severity.name, 99))
+        agg = aggregate_findings(findings)
+        lines.append(f"OVERALL RISK: {agg['overall_risk_level']} (Score: {agg['total_score_sum']})")
+        lines.append("="*60)
         
-        lines.append(f"Found {len(sorted_findings)} potential escalation vectors:\n")
+        counts = agg["counts"]
+        lines.append(f"Found {len(findings)} potential escalation vectors:")
+        lines.append(f"CRITICAL: {counts['CRITICAL']} | HIGH: {counts['HIGH']} | MEDIUM: {counts['MEDIUM']} | LOW: {counts['LOW']} | INFO: {counts['INFO']}\n")
         
-        for idx, f in enumerate(sorted_findings):
+        for idx, f in enumerate(agg["priority_list"]):
             lines.append(f"[{idx+1}] {f.severity.name}: {f.title}")
             lines.append(f"    Check: {f.check_id}")
             lines.append(f"    Description: {f.description}")
