@@ -1,0 +1,14 @@
+scope:
+  sensitive_dirs:
+    - C:\Windows
+    - C:\Windows\System32
+    - C:\Program Files
+    - C:\Program Files (x86)
+  include_network_drives: false
+  max_depth: 3
+
+exclusions:
+  paths:
+    - C:\Windows\Temp
+  services:
+    - ExampleService
