@@ -54,3 +54,23 @@ def enumerate_services() -> List[Dict[str, Any]]:
             win32service.CloseServiceHandle(scm_handle)
             
     return services
+
+
+def check_unquoted_service_paths(services: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Flags service binary paths with spaces and no surrounding quotes.
+    Returns a list of flagged services.
+    """
+    flagged = []
+    for svc in services:
+        path = svc.get("binary_path")
+        if not path:
+            continue
+            
+        if not path.startswith('"') and not path.startswith("'"):
+            if " " in path and ".exe" in path.lower():
+                idx = path.lower().find(".exe")
+                base_path = path[:idx + 4]
+                if " " in base_path:
+                    flagged.append(svc)
+    return flagged
