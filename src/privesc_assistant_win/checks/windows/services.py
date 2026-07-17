@@ -134,3 +134,34 @@ def check_service_registry_key_writable(services: List[Dict[str, Any]]) -> List[
             pass
             
     return flagged
+
+
+def check_service_control_permissions(services: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Checks if the current user can reconfigure a given service.
+    """
+    flagged = []
+    scm_handle = None
+    try:
+        scm_handle = win32service.OpenSCManager(None, None, win32service.SC_MANAGER_CONNECT)
+        
+        for svc in services:
+            name = svc.get("name")
+            if not name:
+                continue
+                
+            try:
+                access = win32service.SERVICE_CHANGE_CONFIG
+                svc_handle = win32service.OpenService(scm_handle, name, access)
+                win32service.CloseServiceHandle(svc_handle)
+                flagged.append(svc)
+            except pywintypes.error:
+                pass
+                
+    except pywintypes.error:
+        pass
+    finally:
+        if scm_handle:
+            win32service.CloseServiceHandle(scm_handle)
+            
+    return flagged
