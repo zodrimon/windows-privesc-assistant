@@ -1,15 +1,20 @@
 import argparse
 import sys
+import os
+import platform
+import ctypes
+import datetime
 
 from privesc_assistant_win.core.engine import ScanEngine
 from privesc_assistant_win.core.registry import registry
+from privesc_assistant_win.core.scan_context import ScanContext
 from privesc_assistant_win.config.loader import load_config
 from privesc_assistant_win.reporting import get_reporter
 
 # Import checks to trigger registration
 import privesc_assistant_win.checks
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
 
 def create_parser():
@@ -61,12 +66,29 @@ def list_checks():
     for check_name, check_obj in checks.items():
         print(f"  - {check_obj.name}: {check_obj.description}")
 
+def is_admin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin() != 0
+    except Exception:
+        return False
+
 def scan(args):
     config = load_config(args.config)
-    engine = ScanEngine(config)
+    
+    context = ScanContext(
+        hostname=platform.node(),
+        os_build=platform.version(),
+        os_version=platform.platform(),
+        timestamp=datetime.datetime.now().isoformat(),
+        config=config,
+        is_elevated=is_admin(),
+        current_user=os.environ.get("USERNAME", "Unknown")
+    )
+    
+    engine = ScanEngine(context)
     
     # Run the engine
-    context, findings = engine.run_all()
+    findings = engine.run_all()
     
     # Generate report
     reporter = get_reporter(args.format)

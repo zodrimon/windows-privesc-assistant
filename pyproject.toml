@@ -27,3 +27,6 @@ build = [
 
 [project.scripts]
 privesc-assistant-win = "privesc_assistant_win.cli:main"
+
+[tool.setuptools.package-data]
+"*" = ["*.yaml", "*.json"]
