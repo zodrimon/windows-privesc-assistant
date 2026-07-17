@@ -1,0 +1,7 @@
+{
+  "upnphost": "UPnP Device Host is known to have historical vulnerabilities in old Windows versions.",
+  "wuauserv": "Windows Update service - often leveraged for WSUS spoofing or unquoted service paths.",
+  "spooler": "Print Spooler - vulnerable to PrintNightmare.",
+  "vmtoolsd": "VMware Tools - sometimes misconfigured with unquoted service paths or weak permissions.",
+  "xampp": "XAMPP services often run as SYSTEM with weak directory permissions."
+}
