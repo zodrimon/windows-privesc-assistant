@@ -192,3 +192,87 @@ def cross_reference_known_vulnerable_services(services: List[Dict[str, Any]]) ->
             flagged.append(svc)
             
     return flagged
+
+
+from privesc_assistant_win.checks.base import BaseCheck
+from privesc_assistant_win.core.scan_context import ScanContext
+from privesc_assistant_win.core.finding import Finding, Severity
+from privesc_assistant_win.core.registry import register_check
+
+@register_check
+class ServicesCheck(BaseCheck):
+    @property
+    def name(self) -> str:
+        return "service_misconfigurations"
+        
+    @property
+    def description(self) -> str:
+        return "Checks for unquoted service paths, writable service binaries, writable service registry keys, and permissive service ACLs."
+        
+    def run(self, context: ScanContext) -> List[Finding]:
+        findings = []
+        services = enumerate_services()
+        
+        # 1. Unquoted Service Paths
+        unquoted = check_unquoted_service_paths(services)
+        for svc in unquoted:
+            findings.append(Finding(
+                title=f"Unquoted Service Path: {svc['name']}",
+                severity=Severity.MEDIUM,
+                description=f"The service {svc['name']} has an unquoted binary path: {svc['binary_path']}. This may allow an attacker to hijack the service by placing an executable in a matching path.",
+                evidence=svc['binary_path'],
+                remediation="Enclose the service binary path in quotes in the registry.",
+                check_id=self.name
+            ))
+            
+        # 2. Writable Service Binaries
+        writable_bins = check_service_binary_writable(services)
+        for svc in writable_bins:
+            severity = Severity.CRITICAL if str(svc.get("start_type")) == "2" else Severity.HIGH
+            findings.append(Finding(
+                title=f"Writable Service Binary: {svc['name']}",
+                severity=severity,
+                description=f"The service {svc['name']} points to a binary that is writable by the current user: {svc['binary_path']}.",
+                evidence=svc['binary_path'],
+                remediation="Restrict write access to the service binary.",
+                check_id=self.name
+            ))
+            
+        # 3. Writable Service Registry Keys
+        writable_keys = check_service_registry_key_writable(services)
+        for svc in writable_keys:
+            severity = Severity.CRITICAL if str(svc.get("start_type")) == "2" else Severity.HIGH
+            findings.append(Finding(
+                title=f"Writable Service Registry Key: {svc['name']}",
+                severity=severity,
+                description=f"The current user has write access to the registry key for service {svc['name']}.",
+                evidence=f"HKLM\\SYSTEM\\CurrentControlSet\\Services\\{svc['name']}",
+                remediation="Restrict write access to the service registry key.",
+                check_id=self.name
+            ))
+            
+        # 4. Service Control Permissions
+        control_perms = check_service_control_permissions(services)
+        for svc in control_perms:
+            findings.append(Finding(
+                title=f"Service Reconfiguration Rights: {svc['name']}",
+                severity=Severity.HIGH,
+                description=f"The current user has SERVICE_CHANGE_CONFIG rights over service {svc['name']}.",
+                evidence=svc['name'],
+                remediation="Restrict access controls on the service via sc sdset.",
+                check_id=self.name
+            ))
+            
+        # 5. Known Vulnerable Services
+        known_vulns = cross_reference_known_vulnerable_services(services)
+        for svc in known_vulns:
+            findings.append(Finding(
+                title=f"Known Vulnerable Service Installed: {svc['name']}",
+                severity=Severity.MEDIUM,
+                description=f"A known vulnerable service was detected: {svc['name']}. Note: {svc['vuln_note']}",
+                evidence=svc['name'],
+                remediation="Apply patches or disable the service if not required.",
+                check_id=self.name
+            ))
+            
+        return findings
