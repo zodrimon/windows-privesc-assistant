@@ -112,3 +112,25 @@ def check_service_binary_writable(services: List[Dict[str, Any]]) -> List[Dict[s
             flagged.append(svc)
             
     return flagged
+
+
+def check_service_registry_key_writable(services: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Checks if the current user has write access to the service's registry key.
+    """
+    import winreg
+    flagged = []
+    for svc in services:
+        name = svc.get("name")
+        if not name:
+            continue
+            
+        key_path = f"SYSTEM\\CurrentControlSet\\Services\\{name}"
+        try:
+            hkey = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key_path, 0, winreg.KEY_SET_VALUE)
+            winreg.CloseKey(hkey)
+            flagged.append(svc)
+        except OSError:
+            pass
+            
+    return flagged
