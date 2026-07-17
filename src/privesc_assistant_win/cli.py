@@ -10,6 +10,9 @@ from privesc_assistant_win.core.utils import is_elevated
 from privesc_assistant_win.core.registry import registry
 from privesc_assistant_win.config.loader import load_config
 
+# Import checks to trigger registration
+import privesc_assistant_win.checks
+
 VERSION = "0.1.0"
 
 
