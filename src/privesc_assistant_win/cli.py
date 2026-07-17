@@ -8,6 +8,7 @@ from privesc_assistant_win.core.scan_context import ScanContext
 from privesc_assistant_win.core.engine import ScanEngine
 from privesc_assistant_win.core.utils import is_elevated
 from privesc_assistant_win.core.registry import registry
+from privesc_assistant_win.config.loader import load_config
 
 VERSION = "0.1.0"
 
@@ -30,10 +31,21 @@ def cmd_scan(args):
     if args.checks:
         checks_list = [c.strip() for c in args.checks.split(",")]
         
-    config = {
-        "checks": checks_list
-    }
-    
+    try:
+        config = load_config(args.config)
+    except Exception as e:
+        logging.error(f"Failed to load config: {e}")
+        sys.exit(1)
+        
+    if checks_list:
+        config["checks"] = checks_list
+        
+    if args.format:
+        config["output"]["format"] = args.format
+        
+    if args.output:
+        config["output"]["path"] = args.output
+        
     context = ScanContext(
         hostname=platform.node(),
         os_build=platform.version(),
