@@ -1,2 +1,3 @@
 from privesc_assistant_win.checks.windows.services import ServicesCheck
 from privesc_assistant_win.checks.windows.token_privileges import TokenPrivilegesCheck
+from privesc_assistant_win.checks.windows.path import WritablePathCheck
