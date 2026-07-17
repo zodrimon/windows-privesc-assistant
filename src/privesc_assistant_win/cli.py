@@ -104,6 +104,14 @@ def scan(args):
 
 def main():
     parser = create_parser()
+    
+    # If double-clicked without arguments, pause before exiting so the window doesn't immediately close
+    if len(sys.argv) == 1:
+        parser.print_help()
+        print("\n[!] You must run this tool from the Command Prompt or PowerShell, or pass arguments.")
+        input("Press Enter to exit...")
+        sys.exit(1)
+        
     args = parser.parse_args()
     
     if args.command == "scan":
