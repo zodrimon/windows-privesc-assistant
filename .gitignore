@@ -6,5 +6,3 @@ build/
 .pytest_cache/
 *.egg-info/
 Thumbs.db
-*Context.md
-*tasks.md
