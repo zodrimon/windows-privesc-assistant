@@ -29,7 +29,7 @@ jobs:
 
       - name: Build Standalone Executable
         run: |
-          pyinstaller --onefile src/privesc_assistant_win/cli.py --name privesc-assistant-win
+          pyinstaller --onefile --add-data "src/privesc_assistant_win/config/default_config.yaml;privesc_assistant_win/config" src/privesc_assistant_win/cli.py --name privesc-assistant-win
 
       - name: Create Release
         uses: softprops/action-gh-release@v2

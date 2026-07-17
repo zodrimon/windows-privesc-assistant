@@ -7,9 +7,16 @@ from typing import Dict, Any
 from privesc_assistant_win.config.schema import CONFIG_SCHEMA
 
 
+import sys
+
 def get_default_config_path() -> str:
     """Returns the absolute path to the bundled default_config.yaml."""
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        # Running as PyInstaller bundle
+        current_dir = os.path.join(sys._MEIPASS, "privesc_assistant_win", "config")
+    else:
+        # Running normally
+        current_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(current_dir, "default_config.yaml")
 
 
