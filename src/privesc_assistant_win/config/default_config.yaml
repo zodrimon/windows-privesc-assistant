@@ -1,0 +1,24 @@
+# Default Configuration for windows-privesc-assistant
+
+# Global scan settings
+scan:
+  timeout_per_check: 30  # seconds
+
+# Output settings
+output:
+  format: "terminal" # Supported: terminal, json, md, html
+  path: "privesc_report" # Extension will be added automatically
+  verbosity: "info" # Supported: debug, info, warn, error
+
+# Checks Configuration
+# A list of check modules to run. Setting "all" runs everything registered.
+checks:
+  - "all"
+  # Or you can specify individual check names to run explicitly:
+  # - "service_misconfigurations"
+  # - "token_privileges"
+  # - "writable_path_dll"
+  # - "scheduled_tasks"
+  # - "weak_permissions"
+  # - "patch_cve"
+  # - "misconfigurations"

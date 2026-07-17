@@ -11,7 +11,9 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "pywin32"
+    "pywin32",
+    "PyYAML",
+    "jsonschema"
 ]
 
 [project.scripts]
