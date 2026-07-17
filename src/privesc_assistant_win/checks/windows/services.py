@@ -74,3 +74,41 @@ def check_unquoted_service_paths(services: List[Dict[str, Any]]) -> List[Dict[st
                 if " " in base_path:
                     flagged.append(svc)
     return flagged
+
+
+def _extract_binary_path(full_path: str) -> str:
+    """Helper to extract the actual executable path from a service command line."""
+    if not full_path:
+        return ""
+    if full_path.startswith('"') or full_path.startswith("'"):
+        quote = full_path[0]
+        end_idx = full_path.find(quote, 1)
+        if end_idx != -1:
+            return full_path[1:end_idx]
+    
+    idx = full_path.lower().find(".exe")
+    if idx != -1:
+        return full_path[:idx + 4]
+        
+    return full_path.split(" ")[0]
+
+
+def check_service_binary_writable(services: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Checks if the current user has write access to the service binary.
+    """
+    import os
+    flagged = []
+    for svc in services:
+        path = svc.get("binary_path")
+        if not path:
+            continue
+            
+        bin_path = _extract_binary_path(path)
+        if not bin_path or not os.path.exists(bin_path):
+            continue
+            
+        if os.access(bin_path, os.W_OK):
+            flagged.append(svc)
+            
+    return flagged
