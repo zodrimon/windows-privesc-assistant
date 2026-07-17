@@ -19,11 +19,13 @@ cd windows-privesc-assistant
 pip install .
 ```
 
+> **Note:** If you see a warning that `privesc-assistant-win.exe` is installed in a directory that is not on your PATH (like `C:\Users\<User>\AppData\Roaming\Python\Python313\Scripts`), you can either add that directory to your Windows `PATH` environment variable, or run the tool using `python -m privesc_assistant_win.cli scan`.
+
 ### Standalone Executable
-You can build a standalone executable using PyInstaller:
+You can build a standalone executable using PyInstaller. If `pyinstaller` is not on your PATH, you can run it via Python:
 ```powershell
 pip install pyinstaller
-pyinstaller --onefile src/privesc_assistant_win/cli.py --name privesc-assistant-win
+python -m PyInstaller --onefile src/privesc_assistant_win/cli.py --name privesc-assistant-win
 ```
 
 ## Quickstart
