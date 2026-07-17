@@ -1,0 +1,16 @@
+[
+    {
+        "cve": "CVE-2021-34527",
+        "name": "PrintNightmare",
+        "description": "Windows Print Spooler Remote Code Execution / LPE Vulnerability",
+        "affected_builds": ["14393", "17763", "18362", "18363", "19041", "19042", "19043"],
+        "patched_by": ["KB5004945", "KB5004946", "KB5004947", "KB5004948", "KB5004953", "KB5004954"]
+    },
+    {
+        "cve": "CVE-2021-36934",
+        "name": "SeriousSAM (HiveNightmare)",
+        "description": "Windows Elevation of Privilege Vulnerability due to permissive SAM/SYSTEM file ACLs",
+        "affected_builds": ["17763", "18362", "18363", "19041", "19042", "19043"],
+        "patched_by": []
+    }
+]

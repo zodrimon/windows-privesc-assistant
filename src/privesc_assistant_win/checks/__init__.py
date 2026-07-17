@@ -3,3 +3,4 @@ from privesc_assistant_win.checks.windows.token_privileges import TokenPrivilege
 from privesc_assistant_win.checks.windows.path import WritablePathCheck
 from privesc_assistant_win.checks.windows.scheduled_tasks import ScheduledTasksCheck
 from privesc_assistant_win.checks.windows.weak_permissions import WeakPermissionsCheck
+from privesc_assistant_win.checks.windows.patch_cve import PatchAndCveCheck
