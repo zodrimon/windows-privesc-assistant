@@ -11,9 +11,18 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "pywin32",
-    "PyYAML",
-    "jsonschema"
+    "pywin32>=306",
+    "pyyaml>=6.0",
+    "jsonschema>=4.17.3"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "flake8>=6.0"
+]
+build = [
+    "pyinstaller>=6.0"
 ]
 
 [project.scripts]
