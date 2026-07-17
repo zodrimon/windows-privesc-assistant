@@ -165,3 +165,30 @@ def check_service_control_permissions(services: List[Dict[str, Any]]) -> List[Di
             win32service.CloseServiceHandle(scm_handle)
             
     return flagged
+
+
+def cross_reference_known_vulnerable_services(services: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Checks services against a known vulnerable services database.
+    """
+    import json
+    import os
+    
+    flagged = []
+    
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    data_file = os.path.abspath(os.path.join(current_dir, "..", "..", "..", "..", "data", "known_vulnerable_services.json"))
+    
+    if not os.path.exists(data_file):
+        return []
+        
+    with open(data_file, "r", encoding="utf-8") as f:
+        known_vulns = json.load(f)
+        
+    for svc in services:
+        name = svc.get("name", "").lower()
+        if name in known_vulns:
+            svc["vuln_note"] = known_vulns[name]
+            flagged.append(svc)
+            
+    return flagged
